@@ -46,13 +46,14 @@
             <form class="flex flex-col space-y-4" action="/" method="POST">
                 @csrf
                 <input type="text" name="title" placeholder="Todo"
-                    class="py-3 px-4 bg-gray-100 rounded-xl focus:outline-none focus:ring focus:ring-blue-400 focus:shadow-lg focus:-translate-y-0.5 transition-all">
-                @if ($errors->any())
-                    <small class="ms-2 font-bold text-sm text-rose-500 italic">Title is required.</small>
-                @endif
+                    class="py-3 px-4 bg-gray-100 rounded-xl focus:outline-none focus:ring focus:ring-blue-400 focus:shadow-lg focus:-translate-y-0.5 transition-all @error('title') {{ 'ring-red-500 ring' }} @enderror"
+                    value="{{ old('title') }}">
+                @error('title')
+                    <small class="text-red-500 italic">{{ $message }}</small>
+                @enderror
 
                 <textarea name="description" placeholder="Todo Description"
-                    class="py-3 px-4 bg-gray-100 rounded-xl focus:outline-none focus:ring focus:ring-blue-400 focus:shadow-lg focus:-translate-y-0.5 transition-all overflow-auto resize-none"></textarea>
+                    class="py-3 px-4 bg-gray-100 rounded-xl focus:outline-none focus:ring focus:ring-blue-400 focus:shadow-lg focus:-translate-y-0.5 transition-all overflow-auto resize-none">{{ old('description') }}</textarea>
 
                 <button
                     class="w-28 py-4 px-6 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all">Add</button>

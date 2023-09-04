@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Todo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TodoController extends Controller
 {
@@ -15,17 +16,9 @@ class TodoController extends Controller
 
     public function store(Request $request)
     {
-        $validator = validator($request->all(), [
-            'title' => 'required',
-            'description' => 'nullable',
-        ]);
+        $this->validationCheck($request);
 
-        if ($validator->fails()) return back()->withErrors($validator);
-
-        $data = [
-            'title' => $request->title,
-            'description' => $request->description,
-        ];
+        $data = $this->requestData($request);
 
         Todo::create($data);
 
@@ -42,5 +35,27 @@ class TodoController extends Controller
     {
         $todo->delete();
         return redirect('/')->with('deleted', 'Deleted Successfully');
+    }
+
+    private function requestData($request)
+    {
+        return [
+            'title' => $request->title,
+            'description' => $request->description,
+        ];
+    }
+
+    private function validationCheck($request)
+    {
+        $valdation = [
+            'title' => 'required|unique:todos,title|min:3',
+            'description' => 'nullable',
+        ];
+
+        $valdationMessage = [
+            'title.unique' => "Title Name was taken"
+        ];
+
+        Validator::make($request->all(), $valdation, $valdationMessage)->validate();
     }
 }
