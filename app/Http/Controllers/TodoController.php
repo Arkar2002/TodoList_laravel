@@ -10,7 +10,14 @@ class TodoController extends Controller
 {
     public function index()
     {
-        $todos = Todo::orderBy('id', "DESC")->get();
+        $todos = Todo::when(request('searchKey'), function ($todo) {
+            $searchKey = request('searchKey');
+            return $todo
+                ->orWhere('title', 'like', "%$searchKey%")
+                ->orWhere("description", 'like', "%$searchKey%");
+        })
+            ->orderBy('id', 'DESC')
+            ->paginate(5);
         return view('app', compact('todos'));
     }
 
@@ -35,6 +42,12 @@ class TodoController extends Controller
     {
         $todo->delete();
         return redirect('/')->with('deleted', 'Deleted Successfully');
+    }
+
+    public function destoryAll()
+    {
+        Todo::truncate();
+        return redirect('/')->with("deletedAll", "All Deleted Successfully");
     }
 
     private function requestData($request)

@@ -40,6 +40,10 @@
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                 <span class="block">{{ session('deleted') }}</span>
             </div>
+        @elseif (session('deletedAll'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block">{{ session('deletedAll') }}</span>
+            </div>
         @endif
 
         <div class="mb-6">
@@ -61,6 +65,35 @@
         </div>
 
         <hr>
+
+        @if (count($todos) > 0)
+            <div class="p-4 flex items-center justify-between">
+                <form action="/" method="GET">
+                    <div class="flex items-center gap-1">
+                        <input type="text" name="searchKey" value="{{ request('searchKey') }}"
+                            class="border rounded-lg focus:outline-none px-5 py-2 basis-60 w-full"
+                            placeholder="Search....">
+                        <span class="bg-green-500 text-white px-5 py-2 rounded-lg">Search</span>
+                    </div>
+                </form>
+
+                <form action="/" method="POST">
+                    @method('DELETE')
+                    @csrf
+                    <button class="bg-red-500 text-white rounded-lg px-2 py-3 hover:bg-red-600">Clear All</button>
+                </form>
+            </div>
+
+            <hr>
+        @endif
+
+        @if ($todos->total() > 5)
+            <div class="p-5">
+                {{ $todos->appends(request()->query())->links() }}
+            </div>
+            <hr>
+        @endif
+
 
         <div class="mt-2">
             @foreach ($todos as $todo)
